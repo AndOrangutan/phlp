@@ -1,4 +1,5 @@
 #include "logger.h"
+#include "platform/platform.h" 
 
 // NOTE: temp
 #include <stdio.h>
@@ -24,20 +25,26 @@ void log_output(log_level level, const char * msg, ...) {
         "[TRACE]: "
     };
 
-    /* b8 is_error = level < 2; */
+    b8 is_error = level < LOG_LEVEL_WARN;
 
-    char in_msg[32000] = {0};
+    const i32 msg_length = 32000;
+
+    char in_msg[msg_length];
+    memset(in_msg, 0, sizeof(in_msg));
 
     // To get around MS headers overide
     __builtin_va_list arg_ptr;
     va_start(arg_ptr, msg);
-    vsnprintf(in_msg, 32000, msg, arg_ptr);
+    vsnprintf(in_msg, msg_length, msg, arg_ptr);
     va_end(arg_ptr);
 
-    char out_msg[32000];
+    char out_msg[msg_length];
     sprintf(out_msg, "%s%s\n", level_strings[level], in_msg);
 
-    // NOTE: temp
-    printf("%s", out_msg);
+    if (is_error) {
+        platform_console_write_error(out_msg, level);
+    } else {
+        platform_console_write(out_msg, level);
+    }
 
 }
