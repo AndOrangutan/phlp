@@ -9,7 +9,7 @@ cFilenames=$(find . -type f -name "*.c")
 # echo "Files:" $cFilenames
 
 assembly="testbed"
-compilerFlags="-g -fdeclspec -fPIC" 
+compilerFlags="-g -fdeclspec -fPIC -MJ ../bin/testbed.o.json" 
 # -fms-extensions 
 # -Wall -Werror
 includeFlags="-Isrc -I../engine/src/"
@@ -19,3 +19,4 @@ defines="-D_DEBUG -DPIMPORT"
 echo "Building $assembly..."
 echo clang $cFilenames $compilerFlags -o ../bin/$assembly $defines $includeFlags $linkerFlags
 clang $cFilenames $compilerFlags -o ../bin/$assembly $defines $includeFlags $linkerFlags
+sed -e '1s/^/[\'$'\n''/' -e '$s/,$/\'$'\n'']/' ../bin/*.o.json > ../compile_commands.json

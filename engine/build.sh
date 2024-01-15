@@ -10,7 +10,7 @@ cFilenames=$(find . -type f -name "*.c")
 echo "Files:" $cFilenames
 
 assembly="engine"
-compilerFlags="-g -shared -fdeclspec -fPIC -Wall -Werror"
+compilerFlags="-g -shared -fdeclspec -fPIC -Wall -Werror -MJ ../bin/engine.o.json"
 # -fms-extensions 
 # -Wall -Werror
 includeFlags="-Isrc -I$VULKAN_SDK/include"
@@ -19,3 +19,4 @@ defines="-D_DEBUG -DKPXPORT"
 
 echo "Building $assembly..."
 clang $cFilenames $compilerFlags -o ../bin/lib$assembly.so $defines $includeFlags $linkerFlags
+sed -e '1s/^/[\'$'\n''/' -e '$s/,$/\'$'\n'']/' ../bin/*.o.json > ../compile_commands.json
