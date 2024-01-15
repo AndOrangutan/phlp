@@ -12,6 +12,9 @@
 #define LOG_TRACE_ENABLED 0
 #endif
 
+// @brief Number of log levels
+#define LOG_LEVELS 6
+
 typedef enum log_level {
     LOG_LEVEL_FATAL = 0,
     LOG_LEVEL_ERROR = 1,

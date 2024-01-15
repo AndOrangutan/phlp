@@ -15,7 +15,7 @@ void shutdown_logger() {
 }
 
 void log_output(log_level level, const char * msg, ...) {
-    const char* level_strings[6] = {
+    const char* level_strings[LOG_LEVELS] = {
         "[FATAL]: ",
         "[ERROR]: ",
         "[WARN]: ",

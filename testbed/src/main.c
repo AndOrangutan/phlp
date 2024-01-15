@@ -1,7 +1,10 @@
-#include <test.h>
+#include <core/logger.h>
+#include <core/asserts.h>
 
 int main(int argc, char *argv[]) {
-    print_int(42);
+    PFATAL("A test error: %2.3f", 69.420f);
 
-    return EXIT_SUCCESS;
+    PASSERT(1 < 3);
+
+    return 0;
 }
