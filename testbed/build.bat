@@ -11,7 +11,7 @@ FOR /R %%f IN (*.c) DO (
 REM echo "Files:" %cFilenames%
 
 SET assembly=testbed
-set compilerFlags=-g -m64 -Wall -Werror
+set compilerFlags=-g -Wall -Werror
 REM -Wall -Werror
 SET includeFlags=-Isrc -I../engine/src/
 SET linkerFlags=-L../bin/ -lengine.lib
