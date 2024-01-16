@@ -8,19 +8,18 @@
 #include <windowsx.h> // param input extraction
 #include <stdlib.h>
 
-typedef struct internal_state {
+typedef struct platform_state {
     HINSTANCE h_instance;
     HWND hwnd;
-} internal_state;
+} platfrom_state;
 
 static f64 clock_frequency;
 static LARGE_INTEGER start_time;
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
-b8 platform_init(platform_state *plat_state, const char *application_name, i32 x, i32 y, i32 width, i32 height) {
-    plat_state->internal_state = malloc(sizeof(internal_state));
-    internal_state *state = (internal_state*)plat_state->internal_state;
+platform_state* platform_init(const char *application_name, i32 x, i32 y, i32 width, i32 height) {
+    platform_state* state = malloc(sizeof(platform_state));
 
     state->h_instance = GetModuleHandleA(0);
 
@@ -102,7 +101,7 @@ b8 platform_init(platform_state *plat_state, const char *application_name, i32 x
     clock_frequency = 1.0 / (f64)frequency.QuadPart;
     QueryPerformanceCounter(&start_time);
 
-    return TRUE;
+    return state;
 }
 
 void platform_shutdown(platform_state *plat_state) {
@@ -155,7 +154,7 @@ void *platform_set_memory(void *dest, i32 value, u64 size) {
 void platform_console_write(const char *msg, u8 color) {
     HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
-    static u8 levels[6] = {64, 4, 6, 2, 1, 8};
+    static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
     SetConsoleTextAttribute(console_handle, levels[color]);
 
     OutputDebugStringA(msg);
@@ -167,7 +166,7 @@ void platform_console_write(const char *msg, u8 color) {
 void platform_console_write_error(const char *msg, u8 color) {
     HANDLE console_handle = GetStdHandle(STD_ERROR_HANDLE);
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
-    static u8 levels[6] = {64, 4, 6, 2, 1, 8};
+    static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
     SetConsoleTextAttribute(console_handle, levels[color]);
 
     OutputDebugStringA(msg);

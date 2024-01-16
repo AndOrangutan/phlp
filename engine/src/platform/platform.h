@@ -8,9 +8,7 @@
  * @brief Platform specific state
  *
  */
-typedef struct platform_state {
-    void* internal_state;
-} platform_state;
+typedef struct platform_state platform_state;
 
 
 /**
@@ -20,8 +18,7 @@ typedef struct platform_state {
  * @param application_name For windows?
  * @return // TODO: SET
  */
-PAPI b8 platform_init (
-    platform_state* plat_state,
+PAPI platform_state* platform_init (
     const char* application_name,
     i32 x,
     i32 y,
