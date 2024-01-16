@@ -8,7 +8,7 @@
 #include <windowsx.h> // param input extraction
 #include <stdlib.h>
 
-typedef struct platform_state {
+typedef struct p_state {
     HINSTANCE h_instance;
     HWND hwnd;
 } platfrom_state;
@@ -18,8 +18,8 @@ static LARGE_INTEGER start_time;
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
-platform_state* platform_init(const char *application_name, i32 x, i32 y, i32 width, i32 height) {
-    platform_state* state = malloc(sizeof(platform_state));
+p_state* p_init(const char *application_name, i32 x, i32 y, i32 width, i32 height) {
+    p_state* state = malloc(sizeof(p_state));
 
     state->h_instance = GetModuleHandleA(0);
 
@@ -104,16 +104,16 @@ platform_state* platform_init(const char *application_name, i32 x, i32 y, i32 wi
     return state;
 }
 
-void platform_shutdown(platform_state *plat_state) {
-    internal_state *state = (internal_state *)plat_state->internal_state;
-
+void p_kill(p_state *state) {
     if (state->hwnd) {
         DestroyWindow(state->hwnd);
         state->hwnd = 0;
+    } else {
+        PFATAL("Window handle is null!");
     }
 }
 
-b8 platform_pump_messages(platform_state *plat_state) {
+b8 p_pump_messages(p_state *plat_state) {
     MSG msg;
     while(PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
         /* if (msg.message == WM_QUIT) { */
@@ -126,32 +126,32 @@ b8 platform_pump_messages(platform_state *plat_state) {
     return TRUE;
 }
 
-void *platform_alloc(u64 size, b8 aligned) {
+void *p_alloc(u64 size, b8 aligned) {
     // NOTE: TEMP use stdlib
     return malloc(size);
 }
 
-void platform_free(void *block, b8 aligned) {
+void p_free(void *block, b8 aligned) {
     // NOTE: TEMP use stdlib
     free(block);
 }
 
-void *platform_zero_memory(void *block, u64 size) {
+void *p_zero_memory(void *block, u64 size) {
     // NOTE: TEMP use stdlib
     return memset(block, 0, size);
 }
 
-void *platform_copy_memory(void *dest, const void *source, u64 size) {
+void *p_copy_memory(void *dest, const void *source, u64 size) {
     // NOTE: TEMP use stdlib
     return memcpy(dest, source, size);
 }
 
-void *platform_set_memory(void *dest, i32 value, u64 size) {
+void *p_set_memory(void *dest, i32 value, u64 size) {
     // NOTE: TEMP use stdlib
     return memset(dest, value, size);
 }
 
-void platform_console_write(const char *msg, u8 color) {
+void p_console_write(const char *msg, u8 color) {
     HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
     static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
@@ -163,7 +163,7 @@ void platform_console_write(const char *msg, u8 color) {
     WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), msg, (DWORD)length, chars_written, 0);
 }
 
-void platform_console_write_error(const char *msg, u8 color) {
+void p_console_write_error(const char *msg, u8 color) {
     HANDLE console_handle = GetStdHandle(STD_ERROR_HANDLE);
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
     static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
@@ -176,13 +176,13 @@ void platform_console_write_error(const char *msg, u8 color) {
 }
 
 
-f64 platform_get_time() {
+f64 p_get_time() {
     LARGE_INTEGER now_time;
     QueryPerformanceCounter(&now_time);
     return (f64)now_time.QuadPart * clock_frequency;
 }
 
-void platform_sleep(u64 ms) {
+void p_sleep(u64 ms) {
     Sleep(ms);
 }
 

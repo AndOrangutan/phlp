@@ -19,7 +19,7 @@ popd
 ERRORLEVEL=$?
 if [ $ERRORLEVEL -ne 0 ]
 then
-  echo "Error building engine:"$ERRORLEVEL && exit
+  echo "Error building testbed:"$ERRORLEVEL && exit
 fi
 
 echo "All assemblies built successfully."

@@ -1,7 +1,7 @@
 REM Build everything
 @ECHO OFF
 
-ECHO "Building engine..."
+ECHO "Building All..."
 
 PUSHD engine
 CALL build.bat
