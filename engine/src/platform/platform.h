@@ -4,11 +4,11 @@
 
 
 /**
- * @typedef p_state
+ * @typedef plat_state
  * @brief Platfrom specific state
  *
  */
-typedef struct p_state p_state;
+typedef struct plat_state plat_state;
 
 /**
  * @brief Platform specific initializer
@@ -17,21 +17,21 @@ typedef struct p_state p_state;
  * @param x Location of the window
  * @param y Location of the window
  */
-PAPI p_state* p_init(const char* application_name, i32 x, i32 y, i32 width, i32 height);
+PAPI plat_state* plat_init(const char* application_name, i32 x, i32 y, i32 width, i32 height);
 
 /**
  * @brief Platfrom shutdown
  *
  * @param plat_state Platform to shutdown
  */
-PAPI void p_kill(p_state* plat_state);
+PAPI void plat_kill(plat_state* state);
 
 /**
  * @brief Clear window message queue. Must be called in the main game loop!!!
  *
  * @param plat_state Platform to pump
  */
-PAPI b8 p_pump_messages(p_state* plat_state);
+PAPI b8 plat_pump_messages(plat_state* state);
 
 
 /**
@@ -41,7 +41,7 @@ PAPI b8 p_pump_messages(p_state* plat_state);
  * @param aligned [TODO:parameter] fill in later
  * @return Allowcation memory block
  */
-PAPI void* p_alloc(u64 size, b8 aligned);
+PAPI void* plat_alloc(u64 size, b8 aligned);
 
 /**
  * @brief Platform specific free()
@@ -49,11 +49,7 @@ PAPI void* p_alloc(u64 size, b8 aligned);
  * @param block Block of memory to free
  * @param aligned [TODO:parameter]
  */
-PAPI void p_free(void* block, b8 aligned);
-
-/**
- * @brief Zero a block of memory
- */
+PAPI void plat_free(void* block, b8 aligned);
 
 /**
  * @brief Platform specific zero memory
@@ -62,38 +58,27 @@ PAPI void p_free(void* block, b8 aligned);
  * @param size Size of block
  * @return Zeroed memory block
  */
-PAPI void* p_zero_memory(void* block, u64 size);
-
-/**
- * @brief Copy a block of memory
- */
+PAPI void* plat_zero_memory(void* block, u64 size);
 
 /**
 * @brief Platform specific memcpy()
  *
 * @return Destination memory block
  */
-PAPI void* p_copy_memory(void* dest, const void* source, u64 size);
-
-/**
- * @brief Set value of platform specific memory
- */
+PAPI void* plat_copy_memory(void* dest, const void* source, u64 size);
 
 /**
  * @brief Platform specific memset()
  *
  * @return Destination memory block
  */
-PAPI void* p_set_memory(void* dest, i32 value, u64 size);
+PAPI void* plat_set_memory(void* dest, i32 value, u64 size);
 
-/**
- * @brief Write colored text to a platform specific console
- */
 
 /**
  * @brief Platform specific console write
  */
-PAPI void p_console_write(const char* msg, u8 color);
+PAPI void plat_console_write(const char* msg, u8 color);
 
 /**
  * @brief Write colored error to a platform specific console
@@ -102,13 +87,13 @@ PAPI void p_console_write(const char* msg, u8 color);
 /**
  * @brief Platform specific console write colored error
  */
-PAPI void p_console_write_error(const char* msg, u8 color);
+PAPI void plat_console_write_error(const char* msg, u8 color);
 
 
 /**
  * @brief Platform absolute time
  */
-PAPI f64 p_get_absolute_time();
+PAPI f64 plat_get_absolute_time();
 
 /**
  * @brief Sleep on the thread for the provided ms. This blocks the main thread. Not exported.
@@ -117,6 +102,6 @@ PAPI f64 p_get_absolute_time();
  */
 
 /**
- * @brief Platform specific sleep
+ * @brief Platform specific sleep on thread for provided ms. Main thread blocking
  */
-PAPI void p_sleep(u64 ms);
+PAPI void plat_sleep(u64 ms);

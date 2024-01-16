@@ -20,18 +20,18 @@
 #include <unistd.h> // usleep
 #endif
 
-typedef struct p_state {
+typedef struct plat_state {
     Display *display;
     xcb_connection_t *connection;
     xcb_window_t window;
     xcb_screen_t *screen;
     xcb_atom_t wm_protocols;
     xcb_atom_t wm_delete_win;
-} p_state;
+} plat_state;
 
 
-p_state* p_init(const char *application_name, i32 x, i32 y, i32 width, i32 height) {
-    p_state* state = malloc(sizeof(p_state));
+plat_state* plat_init(const char *application_name, i32 x, i32 y, i32 width, i32 height) {
+    plat_state* state = malloc(sizeof(plat_state));
 
     // connect to X
     state->display = XOpenDisplay(NULL);
@@ -146,21 +146,21 @@ p_state* p_init(const char *application_name, i32 x, i32 y, i32 width, i32 heigh
     return state;
 }
 
-void p_kill(p_state *plat_state) {
+void plat_kill(plat_state *state) {
     // Turn key repeats back on
-    XAutoRepeatOn(plat_state->display);
+    XAutoRepeatOn(state->display);
 
-    xcb_destroy_window(plat_state->connection, plat_state->window);
+    xcb_destroy_window(state->connection, state->window);
 }
 
-b8 p_pump_messages(p_state *plat_state) {
+b8 plat_pump_messages(plat_state *state) {
     xcb_generic_event_t *event;
     xcb_client_message_event_t *cm;
 
     b8 quit_flagged = FALSE;
 
     // Poll for events
-    while ((event = xcb_poll_for_event(plat_state->connection))) {
+    while ((event = xcb_poll_for_event(state->connection))) {
         if (event == 0) {
             break;
         }
@@ -188,7 +188,7 @@ b8 p_pump_messages(p_state *plat_state) {
                 cm = (xcb_client_message_event_t*)event;
 
                 // Window close
-                if (cm->data.data32[0] == plat_state->wm_delete_win) {
+                if (cm->data.data32[0] == state->wm_delete_win) {
                     quit_flagged = TRUE;
                 }
                 break;
@@ -203,43 +203,43 @@ b8 p_pump_messages(p_state *plat_state) {
     return !quit_flagged;
 }
 
-void* p_alloc(u64 size, b8 aligned) {
+void* plat_alloc(u64 size, b8 aligned) {
     return malloc(size);
 }
 
-void p_free(void* block, b8 aligned) {
+void plat_free(void* block, b8 aligned) {
     free(block);
 }
 
-void* p_zero_alloc(void* block, u64 size) {
+void* plat_zero_alloc(void* block, u64 size) {
     return memset(block, 0, size);
 }
 
-void* p_copy_memory(void* dest, const void* source, u64 size) {
+void* plat_copy_memory(void* dest, const void* source, u64 size) {
     return memcpy(dest, source, size);
 }
 
-void* p_set_memory(void* dest, i32 value, u64 size) {
+void* plat_set_memory(void* dest, i32 value, u64 size) {
     return memset(dest, value, size);
 }
 
-void p_console_write(const char* message, u8 color) {
+void plat_console_write(const char* message, u8 color) {
     const char* color_strings[LOG_LEVELS] = { "0;41", "1;31", "1;33", "1;32", "1;34", "1;30" };
     printf("\033[%sm%s\033[0m", color_strings[color], message);
 }
 
-void p_console_write_error(const char* message, u8 color) {
+void plat_console_write_error(const char* message, u8 color) {
     const char* color_strings[] = {"0;41", "1;31", "1;33", "1;32", "1;34", "1;30"};
     printf("\033[%sm%s\033[0m", color_strings[color], message);
 }
 
-f64 p_get_absolute_time() {
+f64 plat_get_absolute_time() {
     struct timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
     return now.tv_sec + now.tv_nsec * 0.000000001;
 }
 
-void platorm_sleep(u64 ms) {
+void plat_sleep(u64 ms) {
 #if _POSIX_C_SOURCE >= 199309L
     struct timespec ts;
     ts.tv_sec = ms / 1000;
