@@ -7,10 +7,10 @@ mkdir -p ../bin
 # Get a list of all the .c files.
 cFilenames=$(find . -type f -name "*.c")
 
-echo "Files:" $cFilenames
+# echo "Files:" $cFilenames
 
 assembly="engine"
-compilerFlags="-g -shared -fdeclspec -fPIC -Wall -Werror -MJ ../bin/engine.o.json"
+compilerFlags="-g -shared -fdeclspec -fPIC -MJ ../bin/engine.o.json"
 # -fms-extensions 
 # -Wall -Werror
 includeFlags="-Isrc -I$VULKAN_SDK/include"

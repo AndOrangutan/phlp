@@ -6,6 +6,10 @@ A game engine built in C
 
 ### Requirements
 
+#### Linux
+
+- libx11, libxkbcommon
+
 ### Resources
 
 Vulkan:
