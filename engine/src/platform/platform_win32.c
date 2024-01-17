@@ -42,7 +42,7 @@ plat_state *plat_init(const char *application_name, i32 x, i32 y, i32 width,
   if (!RegisterClassA(&wc)) {
     MessageBoxA(0, "Window registration failed", "Error",
                 MB_ICONEXCLAMATION | MB_OK);
-    return FALSE;
+    return NULL;
   }
 
   // Create window
@@ -85,7 +85,7 @@ plat_state *plat_init(const char *application_name, i32 x, i32 y, i32 width,
                 MB_ICONEXCLAMATION | MB_OK);
 
     PFATAL("Window creation failed!");
-    return FALSE;
+    return NULL;
   } else {
     state->hwnd = handle;
   }
