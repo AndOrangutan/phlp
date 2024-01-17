@@ -6,12 +6,12 @@
 #include <string.h>
 #include <stdarg.h>
 
-b8 init_logger() {
+b8 logger_init() {
     // TODO: Create log file
     return TRUE;
 }
 
-void shutdown_logger() {
+void logger_kill() {
     // TODO: Cleanup logging/write queued entries
 }
 
