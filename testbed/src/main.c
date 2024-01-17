@@ -1,27 +1,21 @@
-#include <core/logger.h>
+#include <core/application.h>
 #include <core/asserts.h>
-
-#include <platform/platform.h>
+#include <core/logger.h>
 
 int main(int argc, char *argv[]) {
-    PFATAL("A test error: %2.3f", 69.420f);
-    PERROR("A test error: %2.3f", 69.420f);
-    PWARN("A test error: %2.3f", 69.420f);
-    PINFO("A test error: %2.3f", 69.420f);
-    PDEBUG("A test error: %2.3f", 69.420f);
-    PTRACE("A test error: %2.3f", 69.420f);
+    /* ("Phlp Engine Testbed", 100, 100, 1280, 720) */
 
+    app_config config;
 
-    plat_state* state;
+    config.name = "Phlp Engine Testbed";
+    config.start_pos_x = 100;
+    config.start_pos_y = 100;
+    config.start_width = 1280;
+    config.start_height = 720;
 
-    state = plat_init("Phlp Engine Testbed", 100, 100, 1280, 720);
+    app_init(&config);
 
-    while(TRUE) {
-        plat_pump_messages(state);
-
-    }
-
-    plat_kill(state);
+    app_run();
 
     return 0;
 }
