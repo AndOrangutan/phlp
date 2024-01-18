@@ -211,7 +211,7 @@ void plat_free(void* block, b8 aligned) {
     free(block);
 }
 
-void* plat_zero_alloc(void* block, u64 size) {
+void* plat_zero_memory(void* block, u64 size) {
     return memset(block, 0, size);
 }
 
