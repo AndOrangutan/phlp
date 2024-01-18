@@ -2,6 +2,7 @@
 #include "game_types.h"
 
 #include "core/logger.h"
+#include "core/pmemory.h"
 #include "platform/platform.h"
 
 typedef struct app_state {
@@ -24,7 +25,7 @@ b8 app_init(game *game_inst) {
         PERROR("Multiple app_init() calls!");
         return FALSE;
     }
-    
+
     // Game instance
     state.game_inst = game_inst;
 
@@ -65,6 +66,7 @@ b8 app_init(game *game_inst) {
 }
 
 b8 app_run() {
+    PINFO(memory_usage_str());
 
     while (state.is_running) {
 

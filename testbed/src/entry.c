@@ -2,8 +2,7 @@
 
 #include <entry.h>
 
-// TODO: REMOVE
-#include <platform/platform.h>
+#include <core/pmemory.h>
 
 b8 game_init(game* out_game) {
 
@@ -19,7 +18,7 @@ b8 game_init(game* out_game) {
     out_game->on_resize = game_on_resize;
 
     // Create game state
-    out_game->state = plat_alloc(sizeof(game_state), FALSE);
+    out_game->state = palloc(sizeof(game_state), MEMORY_TAG_GAME);
 
     return TRUE;
 }

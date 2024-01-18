@@ -2,12 +2,15 @@
 
 #include "core/application.h"
 #include "core/logger.h"
+#include "core/pmemory.h"
 #include "game_types.h"
 
 extern b8 game_init(game* out_game);
 
 int main(int argc, char *argv[]) {
     /* ("Phlp Engine Testbed", 100, 100, 1280, 720) */
+
+    memory_init();
 
     // Request game inst
     game game_inst;
@@ -36,6 +39,8 @@ int main(int argc, char *argv[]) {
     }
 
     app_run();
+
+    memory_kill();
 
     return 0;
 }
