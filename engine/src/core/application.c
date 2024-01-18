@@ -1,9 +1,11 @@
 #include "application.h"
+#include "game_types.h"
 
 #include "core/logger.h"
 #include "platform/platform.h"
 
 typedef struct app_state {
+    game *game_inst;
     b8 is_running;
     b8 is_suspended;
     plat_state *platform;
@@ -13,14 +15,18 @@ typedef struct app_state {
 } app_state;
 
 b8 is_initialized = FALSE;
+
 static app_state state;
 
-b8 app_init(app_config *config) {
+b8 app_init(game *game_inst) {
 
     if (is_initialized) {
         PERROR("Multiple app_init() calls!");
         return FALSE;
     }
+    
+    // Game instance
+    state.game_inst = game_inst;
 
     // Initialize Subsystems
     logger_init();
@@ -36,16 +42,25 @@ b8 app_init(app_config *config) {
     state.is_running = TRUE;
     state.is_suspended = FALSE;
 
-    state.platform =
-        plat_init(config->name, config->start_pos_x, config->start_pos_y,
-                  config->start_width, config->start_height);
-
+    state.platform = plat_init(
+        game_inst->app_config.name, game_inst->app_config.start_pos_x,
+        game_inst->app_config.start_pos_y, game_inst->app_config.start_width,
+        game_inst->app_config.start_height);
     if (state.platform == NULL) {
-
         return FALSE;
     }
 
+    // NOTE: Initialize the game
+    if (!state.game_inst->initialize(state.game_inst)) {
+        PFATAL("Initialization failed!");
+        return FALSE;
+    }
+
+    // On Resize handler
+    state.game_inst->on_resize(state.game_inst, state.width, state.height);
+
     is_initialized = TRUE;
+
     return TRUE;
 }
 
@@ -55,6 +70,18 @@ b8 app_run() {
 
         if (!plat_pump_messages(state.platform)) {
             state.is_running = FALSE;
+        }
+
+        if (!state.is_suspended) {
+            if (!state.game_inst->update(state.game_inst, (f32)0)) {
+                PFATAL("Game update failed! Shutting down.");
+                break;
+            }
+
+            if (!state.game_inst->render(state.game_inst, (f32)0)) {
+                PFATAL("Game render failed! Shutting down.");
+                break;
+            }
         }
     }
     state.is_running = FALSE;

@@ -41,7 +41,7 @@ typedef struct plat_state plat_state;
  * @param aligned [TODO:parameter] fill in later
  * @return Allowcation memory block
  */
- void* plat_alloc(u64 size, b8 aligned);
+ PAPI void* plat_alloc(u64 size, b8 aligned);
 
 /**
  * @brief Platform specific free()
@@ -49,7 +49,7 @@ typedef struct plat_state plat_state;
  * @param block Block of memory to free
  * @param aligned [TODO:parameter]
  */
- void plat_free(void* block, b8 aligned);
+ PAPI void plat_free(void* block, b8 aligned);
 
 /**
  * @brief Platform specific zero memory

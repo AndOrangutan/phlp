@@ -2,6 +2,8 @@
 
 #include "defines.h"
 
+struct game;
+
 /**
  * @typedef app_config
  * @brief Configuration used to start applications
@@ -20,7 +22,7 @@ typedef struct app_config {
  *
  * @return TRUE if successful
  */
-PAPI b8 app_init(app_config* config);
+PAPI b8 app_init(struct game* game_inst);
 
 /**
  * @brief Run app and handle shutdown
