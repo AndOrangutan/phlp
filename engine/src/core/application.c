@@ -4,6 +4,7 @@
 #include "core/logger.h"
 #include "core/pmemory.h"
 #include "platform/platform.h"
+#include "core/event.h"
 
 typedef struct app_state {
     game *game_inst;
@@ -43,6 +44,12 @@ b8 app_init(game *game_inst) {
     state.is_running = TRUE;
     state.is_suspended = FALSE;
 
+    if (!event_init()) {
+        PERROR("Event system failed init! Application cannot contine.");
+        return FALSE;
+    }
+
+    // Initialize events
     state.platform = plat_init(
         game_inst->app_config.name, game_inst->app_config.start_pos_x,
         game_inst->app_config.start_pos_y, game_inst->app_config.start_width,
@@ -87,6 +94,8 @@ b8 app_run() {
         }
     }
     state.is_running = FALSE;
+
+    event_kill();
 
     plat_kill(state.platform);
 
