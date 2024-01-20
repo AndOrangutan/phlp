@@ -38,4 +38,4 @@ PAPI void* pmemcpy(void* dest, const void* source, u64 size);
 
 PAPI void* pmemset(void* dest, i32 value, u64 size);
 
-PAPI char* memory_usage_str();
+PAPI char* memory_usage_str(void);
