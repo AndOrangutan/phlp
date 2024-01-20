@@ -5,6 +5,7 @@
 #include "core/pmemory.h"
 #include "platform/platform.h"
 #include "core/event.h"
+#include "core/input.h"
 
 typedef struct app_state {
     game *game_inst;
@@ -32,6 +33,7 @@ b8 app_init(game *game_inst) {
 
     // Initialize Subsystems
     logger_init();
+    input_init();
 
     // TODO: REMOVE
     PFATAL("A test error: %2.3f", 69.420f);
@@ -91,11 +93,18 @@ b8 app_run() {
                 PFATAL("Game render failed! Shutting down.");
                 break;
             }
+
+            // NOTE: Input update/state copying should always be handled
+            // after any input should be recorded; I.E. before this line.
+            // As a safety, input is the last thing to be updated before
+            // this frame ends.
+            input_update(0);
         }
     }
     state.is_running = FALSE;
 
     event_kill();
+    input_kill();
 
     plat_kill(state.platform);
 
