@@ -25,8 +25,8 @@ typedef enum memory_tag {
     MEMORY_TAG_MAX_TAGS
 } memory_tag;
 
-void memory_init();
-void memory_kill();
+PAPI void memory_init();
+PAPI void memory_kill();
 
 PAPI void* palloc(u64 size, memory_tag tag);
 

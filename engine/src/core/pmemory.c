@@ -94,6 +94,6 @@ char *memory_usage_str() {
                               memory_tag_strings[i], amount, unit);
         offset += length;
     }
-    char *out_string = strdup(buffer);
+    char *out_string = _strdup(buffer);
     return out_string;
 }

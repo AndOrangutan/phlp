@@ -154,7 +154,7 @@ b8 application_on_key(u16 code, void *sender, void *sender_inst,
         } else {
             PDEBUG("'%c' key pressed in window.", key_code);
         }
-    } else if (code == EVENT_CODE_KEY_PRESSED) {
+    } else if (code == EVENT_CODE_KEY_RELEASED) {
         u16 key_code = context.data.u16[0];
         if (key_code == KEY_B) {
             // Example of checking for [b] key

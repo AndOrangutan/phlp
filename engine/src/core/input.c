@@ -87,7 +87,7 @@ b8 input_was_button_up(buttons button) {
 void input_process_mouse_move(i16 x, i16 y) {
     if (state.mouse_current.x != x || state.mouse_current.y != y) {
         // NOTE: Enable for print
-        /* PDEBUG("Mouse pos: %i, %i.", x, y); */
+        PDEBUG("Mouse pos: %i, %i.", x, y);
 
         state.mouse_current.x = x;
         state.mouse_current.y = y;

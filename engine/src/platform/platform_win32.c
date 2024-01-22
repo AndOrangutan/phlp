@@ -1,6 +1,7 @@
 #include "platform.h"
 
 #if PPLATFORM_WINDOWS
+#include "core/input.h"
 #include "core/logger.h"
 
 #include <stdlib.h>
@@ -8,8 +9,8 @@
 #include <windowsx.h> // param input extraction
 
 typedef struct plat_state {
-  HINSTANCE h_instance;
-  HWND hwnd;
+    HINSTANCE h_instance;
+    HWND hwnd;
 } platfrom_state;
 
 static f64 clock_frequency;
@@ -19,233 +20,261 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param,
                                        LPARAM l_param);
 
 plat_state *plat_init(const char *application_name, i32 x, i32 y, i32 width,
-                i32 height) {
-  plat_state *state = malloc(sizeof(plat_state));
+                      i32 height) {
+    plat_state *state = malloc(sizeof(plat_state));
 
-  state->h_instance = GetModuleHandleA(0);
+    state->h_instance = GetModuleHandleA(0);
 
-  // Setup and register window class.
-  HICON icon = LoadIcon(state->h_instance, IDI_APPLICATION);
-  WNDCLASSA wc;
-  memset(&wc, 0, sizeof(wc));
-  wc.style = CS_DBLCLKS; // Get double-clicks
-  wc.lpfnWndProc = win32_process_message;
-  wc.cbClsExtra = 0;
-  wc.cbWndExtra = 0;
-  wc.hInstance = state->h_instance;
-  wc.hIcon = icon;
-  wc.hCursor =
-      LoadCursor(NULL, IDC_ARROW); // NULL; // Manage the cursor manually
-  wc.hbrBackground = NULL;         // Transparent
-  wc.lpszClassName = "phlp_window_class";
+    // Setup and register window class.
+    HICON icon = LoadIcon(state->h_instance, IDI_APPLICATION);
+    WNDCLASSA wc;
+    memset(&wc, 0, sizeof(wc));
+    wc.style = CS_DBLCLKS; // Get double-clicks
+    wc.lpfnWndProc = win32_process_message;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = state->h_instance;
+    wc.hIcon = icon;
+    wc.hCursor =
+        LoadCursor(NULL, IDC_ARROW); // NULL; // Manage the cursor manually
+    wc.hbrBackground = NULL;         // Transparent
+    wc.lpszClassName = "phlp_window_class";
 
-  if (!RegisterClassA(&wc)) {
-    MessageBoxA(0, "Window registration failed", "Error",
-                MB_ICONEXCLAMATION | MB_OK);
-    return NULL;
-  }
+    if (!RegisterClassA(&wc)) {
+        MessageBoxA(0, "Window registration failed", "Error",
+                    MB_ICONEXCLAMATION | MB_OK);
+        return NULL;
+    }
 
-  // Create window
-  u32 client_x = x;
-  u32 client_y = y;
-  u32 client_width = width;
-  u32 client_height = height;
+    // Create window
+    u32 client_x = x;
+    u32 client_y = y;
+    u32 client_width = width;
+    u32 client_height = height;
 
-  u32 window_x = client_x;
-  u32 window_y = client_y;
-  u32 window_width = client_width;
-  u32 window_height = client_height;
+    u32 window_x = client_x;
+    u32 window_y = client_y;
+    u32 window_width = client_width;
+    u32 window_height = client_height;
 
-  u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
-  u32 window_ex_style = WS_EX_APPWINDOW;
+    u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
+    u32 window_ex_style = WS_EX_APPWINDOW;
 
-  window_style |= WS_MAXIMIZEBOX;
-  window_style |= WS_MINIMIZEBOX;
-  window_style |= WS_THICKFRAME;
+    window_style |= WS_MAXIMIZEBOX;
+    window_style |= WS_MINIMIZEBOX;
+    window_style |= WS_THICKFRAME;
 
-  // Obtain the size of the border.
-  RECT border_rect = {0, 0, 0, 0};
-  AdjustWindowRectEx(&border_rect, window_style, 0, window_ex_style);
+    // Obtain the size of the border.
+    RECT border_rect = {0, 0, 0, 0};
+    AdjustWindowRectEx(&border_rect, window_style, 0, window_ex_style);
 
-  // In this case, the border rectangle is negative.
-  window_x += border_rect.left;
-  window_y += border_rect.top;
+    // In this case, the border rectangle is negative.
+    window_x += border_rect.left;
+    window_y += border_rect.top;
 
-  // Grow by the size of the OS border.
-  window_width += border_rect.right - border_rect.left;
-  window_height += border_rect.bottom - border_rect.top;
+    // Grow by the size of the OS border.
+    window_width += border_rect.right - border_rect.left;
+    window_height += border_rect.bottom - border_rect.top;
 
-  HWND handle =
-      CreateWindowExA(window_ex_style, "phlp_window_class", application_name,
-                      window_style, window_x, window_y, window_width,
-                      window_height, 0, 0, state->h_instance, 0);
+    HWND handle =
+        CreateWindowExA(window_ex_style, "phlp_window_class", application_name,
+                        window_style, window_x, window_y, window_width,
+                        window_height, 0, 0, state->h_instance, 0);
 
-  if (handle == 0) {
-    MessageBoxA(NULL, "Window creation failed!", "Error!",
-                MB_ICONEXCLAMATION | MB_OK);
+    if (handle == 0) {
+        MessageBoxA(NULL, "Window creation failed!", "Error!",
+                    MB_ICONEXCLAMATION | MB_OK);
 
-    PFATAL("Window creation failed!");
-    return NULL;
-  } else {
-    state->hwnd = handle;
-  }
+        PFATAL("Window creation failed!");
+        return NULL;
+    } else {
+        state->hwnd = handle;
+    }
 
-  // Show the window
-  b32 should_activate =
-      1; // TODO: if the window should not accept input, this should be false.
-  i32 show_window_command_flags = should_activate ? SW_SHOW : SW_SHOWNOACTIVATE;
-  // If initially minimized, use SW_MINIMIZE : SW_SHOWMINNOACTIVE;
-  // If initially maximized, use SW_SHOWMAXIMIZED : SW_MAXIMIZE
-  ShowWindow(state->hwnd, show_window_command_flags);
+    // Show the window
+    b32 should_activate =
+        1; // TODO: if the window should not accept input, this should be false.
+    i32 show_window_command_flags =
+        should_activate ? SW_SHOW : SW_SHOWNOACTIVATE;
+    // If initially minimized, use SW_MINIMIZE : SW_SHOWMINNOACTIVE;
+    // If initially maximized, use SW_SHOWMAXIMIZED : SW_MAXIMIZE
+    ShowWindow(state->hwnd, show_window_command_flags);
 
-  // Clock setup
-  LARGE_INTEGER frequency;
-  QueryPerformanceFrequency(&frequency);
-  clock_frequency = 1.0 / (f64)frequency.QuadPart;
-  QueryPerformanceCounter(&start_time);
+    // Clock setup
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    clock_frequency = 1.0 / (f64)frequency.QuadPart;
+    QueryPerformanceCounter(&start_time);
 
-  return state;
+    return state;
 }
 
 void plat_kill(plat_state *state) {
-  if (state->hwnd) {
-    DestroyWindow(state->hwnd);
-    state->hwnd = 0;
-  } else {
-    PFATAL("Window handle is null!");
-  }
+    if (state->hwnd) {
+        DestroyWindow(state->hwnd);
+        state->hwnd = 0;
+    } else {
+        PFATAL("Window handle is null!");
+    }
 }
 
 b8 plat_pump_messages(plat_state *state) {
-  MSG msg;
-  while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
-    /* if (msg.message == WM_QUIT) { */
-    /*     return FALSE; */
-    /* } */
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
+    MSG msg;
+    while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
+        /* if (msg.message == WM_QUIT) { */
+        /*     return FALSE; */
+        /* } */
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
 
-  return TRUE;
+    return TRUE;
 }
 
 void *plat_alloc(u64 size, b8 aligned) {
-  // NOTE: TEMP use stdlib
-  return malloc(size);
+    // NOTE: TEMP use stdlib
+    return malloc(size);
 }
 
 void plat_free(void *block, b8 aligned) {
-  // NOTE: TEMP use stdlib
-  free(block);
+    // NOTE: TEMP use stdlib
+    free(block);
 }
 
 void *plat_zero_memory(void *block, u64 size) {
-  // NOTE: TEMP use stdlib
-  return memset(block, 0, size);
+    // NOTE: TEMP use stdlib
+    return memset(block, 0, size);
 }
 
 void *plat_copy_memory(void *dest, const void *source, u64 size) {
-  // NOTE: TEMP use stdlib
-  return memcpy(dest, source, size);
+    // NOTE: TEMP use stdlib
+    return memcpy(dest, source, size);
 }
 
 void *plat_set_memory(void *dest, i32 value, u64 size) {
-  // NOTE: TEMP use stdlib
-  return memset(dest, value, size);
+    // NOTE: TEMP use stdlib
+    return memset(dest, value, size);
 }
 
 void plat_console_write(const char *msg, u8 color) {
-  HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-  // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
-  static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
-  SetConsoleTextAttribute(console_handle, levels[color]);
+    HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
+    static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
+    SetConsoleTextAttribute(console_handle, levels[color]);
 
-  OutputDebugStringA(msg);
-  u64 length = strlen(msg);
-  LPDWORD chars_written = 0;
-  WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), msg, (DWORD)length,
-                chars_written, 0);
+    OutputDebugStringA(msg);
+    u64 length = strlen(msg);
+    LPDWORD chars_written = 0;
+    WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), msg, (DWORD)length,
+                  chars_written, 0);
 }
 
 void plat_console_write_error(const char *msg, u8 color) {
-  HANDLE console_handle = GetStdHandle(STD_ERROR_HANDLE);
-  // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
-  static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
-  SetConsoleTextAttribute(console_handle, levels[color]);
+    HANDLE console_handle = GetStdHandle(STD_ERROR_HANDLE);
+    // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
+    static u8 levels[LOG_LEVELS] = {71, 116, 6, 2, 113, 8};
+    SetConsoleTextAttribute(console_handle, levels[color]);
 
-  OutputDebugStringA(msg);
-  u64 length = strlen(msg);
-  LPDWORD chars_written = 0;
-  WriteConsoleA(GetStdHandle(STD_ERROR_HANDLE), msg, (DWORD)length,
-                chars_written, 0);
+    OutputDebugStringA(msg);
+    u64 length = strlen(msg);
+    LPDWORD chars_written = 0;
+    WriteConsoleA(GetStdHandle(STD_ERROR_HANDLE), msg, (DWORD)length,
+                  chars_written, 0);
 }
 
 f64 plat_get_time() {
-  LARGE_INTEGER now_time;
-  QueryPerformanceCounter(&now_time);
-  return (f64)now_time.QuadPart * clock_frequency;
+    LARGE_INTEGER now_time;
+    QueryPerformanceCounter(&now_time);
+    return (f64)now_time.QuadPart * clock_frequency;
 }
 
 void plat_sleep(u64 ms) { Sleep(ms); }
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param,
                                        LPARAM l_param) {
-  switch (msg) {
-  case WM_ERASEBKGND:
-    // Notify the OS that erasing will be handled by the application to prevent
-    // flicker.
-    return 1;
-  case WM_CLOSE:
-    // TODO: Fire an event for the application to quit.
-    return 0;
-  case WM_DESTROY:
-    PostQuitMessage(0);
-    return 0;
-  case WM_SIZE: {
-    // Get the updated size.
-    // RECT r;
-    // GetClientRect(hwnd, &r);
-    // u32 width = r.right - r.left;
-    // u32 height = r.bottom - r.top;
+    switch (msg) {
+    case WM_ERASEBKGND:
+        // Notify the OS that erasing will be handled by the application to
+        // prevent flicker.
+        return 1;
+    case WM_CLOSE:
+        // TODO: Fire an event for the application to quit.
+        return 0;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    case WM_SIZE: {
+        // Get the updated size.
+        // RECT r;
+        // GetClientRect(hwnd, &r);
+        // u32 width = r.right - r.left;
+        // u32 height = r.bottom - r.top;
 
-    // TODO: Fire an event for window resize.
-  } break;
-  case WM_KEYDOWN:
-  case WM_SYSKEYDOWN:
-  case WM_KEYUP:
-  case WM_SYSKEYUP: {
-    // Key pressed/released
-    // b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
-    // TODO: input processing
+        // TODO: Fire an event for window resize.
+    } break;
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYUP: {
+        // Key pressed/released
+        b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
+        keys key = (u16)w_param;
 
-  } break;
-  case WM_MOUSEMOVE: {
-    // Mouse move
-    // i32 x_position = GET_X_LPARAM(l_param);
-    // i32 y_position = GET_Y_LPARAM(l_param);
-    // TODO: input processing.
-  } break;
-  case WM_MOUSEWHEEL: {
-    // i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
-    // if (z_delta != 0) {
-    //     // Flatten the input to an OS-independent (-1, 1)
-    //     z_delta = (z_delta < 0) ? -1 : 1;
-    //     // TODO: input processing.
-    // }
-  } break;
-  case WM_LBUTTONDOWN:
-  case WM_MBUTTONDOWN:
-  case WM_RBUTTONDOWN:
-  case WM_LBUTTONUP:
-  case WM_MBUTTONUP:
-  case WM_RBUTTONUP: {
-    // b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg ==
-    // WM_MBUTTONDOWN;
-    //  TODO: input processing.
-  } break;
-  }
+        // Pass to the input subsystem for processing
+        input_process_key(key, pressed);
 
-  return DefWindowProc(hwnd, msg, w_param, l_param);
+    } break;
+    case WM_MOUSEMOVE: {
+        // Mouse move
+        i32 x_position = GET_X_LPARAM(l_param);
+        i32 y_position = GET_Y_LPARAM(l_param);
+
+        // Pass to input subsystem
+        input_process_mouse_move(x_position, y_position);
+    } break;
+    case WM_MOUSEWHEEL: {
+        i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
+        if (z_delta != 0) {
+            // Flatten the input to an OS-independent (-1, 1)
+            z_delta = (z_delta < 0) ? -1 : 1;
+
+            // Pass to input subsystem
+            input_process_mouse_wheel(z_delta);
+        }
+    } break;
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP: {
+        b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN ||
+                     msg == WM_MBUTTONDOWN;
+        buttons mouse_button = BUTTON_MAX_BUTTONS;
+
+        switch (msg) {
+        case WM_LBUTTONDOWN:
+        case WM_LBUTTONUP:
+            mouse_button = BUTTON_LEFT;
+            break;
+        case WM_MBUTTONDOWN:
+        case WM_MBUTTONUP:
+            mouse_button = BUTTON_MIDDLE;
+            break;
+        case WM_RBUTTONDOWN:
+        case WM_RBUTTONUP:
+            mouse_button = BUTTON_RIGHT;
+            break;
+        }
+
+        // Pass to input subsystem
+        if (mouse_button != BUTTON_MAX_BUTTONS) {
+            input_process_button(mouse_button, pressed);
+        }
+    } break;
+    }
+
+    return DefWindowProc(hwnd, msg, w_param, l_param);
 }
 
 #endif // PPATFORM_WINDOWS
