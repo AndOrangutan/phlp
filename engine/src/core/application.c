@@ -1,11 +1,11 @@
 #include "application.h"
 #include "game_types.h"
 
+#include "core/event.h"
+#include "core/input.h"
 #include "core/logger.h"
 #include "core/pmemory.h"
 #include "platform/platform.h"
-#include "core/event.h"
-#include "core/input.h"
 
 typedef struct app_state {
     game *game_inst;
@@ -20,6 +20,12 @@ typedef struct app_state {
 b8 is_initialized = FALSE;
 
 static app_state state;
+
+// Event handlers
+b8 application_on_event(u16 code, void *sender, void *sender_inst,
+                        event_context context);
+b8 application_on_key(u16 code, void *sender, void *sender_inst,
+                      event_context context);
 
 b8 app_init(game *game_inst) {
 
@@ -50,6 +56,10 @@ b8 app_init(game *game_inst) {
         PERROR("Event system failed init! Application cannot contine.");
         return FALSE;
     }
+
+    event_register(EVENT_CODE_APPLICATION_QUIT, 0, application_on_event);
+    event_register(EVENT_CODE_KEY_PRESSED, 0, application_on_key);
+    event_register(EVENT_CODE_KEY_RELEASED, 0, application_on_key);
 
     // Initialize events
     state.platform = plat_init(
@@ -103,10 +113,55 @@ b8 app_run() {
     }
     state.is_running = FALSE;
 
+    event_unregister(EVENT_CODE_APPLICATION_QUIT, 0, application_on_event);
+    event_unregister(EVENT_CODE_KEY_PRESSED, 0, application_on_key);
+    event_unregister(EVENT_CODE_KEY_RELEASED, 0, application_on_key);
+
     event_kill();
     input_kill();
 
     plat_kill(state.platform);
 
     return TRUE;
+}
+
+b8 application_on_event(u16 code, void *sender, void *sender_inst,
+                        event_context context) {
+    switch (code) {
+    case EVENT_CODE_APPLICATION_QUIT: {
+        PINFO("EVENT_CODE_APPLICATION_QUIT creceived, shutting down.\n");
+        state.is_running = FALSE;
+        return TRUE;
+    }
+    }
+    return FALSE;
+}
+
+b8 application_on_key(u16 code, void *sender, void *sender_inst,
+                      event_context context) {
+    if (code == EVENT_CODE_KEY_PRESSED) {
+        u16 key_code = context.data.u16[0];
+        if (key_code == KEY_ESCAPE) {
+            // NOTE: Techinically firing an event for itself, but there may be
+            // other listeners
+            event_context data = {};
+            event_fire(EVENT_CODE_APPLICATION_QUIT, 0, data);
+
+            return TRUE;
+        } else if (key_code == KEY_A) {
+            // example of checking for [a] key
+            PDEBUG("Explicity - A key pressed!");
+        } else {
+            PDEBUG("'%c' key pressed in window.", key_code);
+        }
+    } else if (code == EVENT_CODE_KEY_PRESSED) {
+        u16 key_code = context.data.u16[0];
+        if (key_code == KEY_B) {
+            // Example of checking for [b] key
+            PDEBUG("Explicit - B key releaded!");
+        } else {
+            PDEBUG("'%c' key released in window.", key_code);
+        }
+    }
+    return FALSE;
 }
