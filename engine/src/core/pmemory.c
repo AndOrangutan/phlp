@@ -1,6 +1,7 @@
 #include "pmemory.h"
 
 #include "core/logger.h"
+#include "core/pstring.h"
 #include "platform/platform.h"
 
 // TODO: remove for str lib
@@ -21,9 +22,7 @@ static const char *memory_tag_strings[MEMORY_TAG_MAX_TAGS] = {
     "MAT_INST   ", "RENDERER   ", "GAME       ", "TRANSFORM  ", "ENTITY     ",
     "ENTITY_NODE", "SCENE      "};
 
-void memory_init() {
-    plat_zero_memory(&stats, sizeof(stats));
-}
+void memory_init() { plat_zero_memory(&stats, sizeof(stats)); }
 void memory_kill() {}
 
 void *palloc(u64 size, memory_tag tag) {
@@ -54,9 +53,7 @@ void pfree(void *block, u64 size, memory_tag tag) {
     plat_free(block, FALSE);
 }
 
-void *pmemzero(void *block, u64 size) {
-    return plat_zero_memory(block, size);
-}
+void *pmemzero(void *block, u64 size) { return plat_zero_memory(block, size); }
 
 void *pmemcpy(void *dest, const void *source, u64 size) {
     return plat_copy_memory(dest, source, size);
@@ -90,10 +87,10 @@ char *memory_usage_str() {
             unit[1] = 0;
             amount = (float)stats.tagged_allocations[i];
         }
-        i32 length = snprintf(buffer + offset, 8000-offset, "  %s: %.2f%s\n",
+        i32 length = snprintf(buffer + offset, 8000 - offset, "  %s: %.2f%s\n",
                               memory_tag_strings[i], amount, unit);
         offset += length;
     }
-    char *out_string = _strdup(buffer);
+    char *out_string = str_duplicate(buffer);
     return out_string;
 }
