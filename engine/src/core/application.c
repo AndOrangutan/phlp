@@ -1,6 +1,7 @@
 #include "application.h"
 #include "game_types.h"
 
+#include "core/clock.h"
 #include "core/event.h"
 #include "core/input.h"
 #include "core/logger.h"
@@ -14,6 +15,7 @@ typedef struct app_state {
     plat_state *platform;
     i16 width;
     i16 height;
+    clock clock;
     f64 last_time;
 } app_state;
 
@@ -85,6 +87,13 @@ b8 app_init(game *game_inst) {
 }
 
 b8 app_run() {
+    clock_start(&state.clock);
+    clock_update(&state.clock);
+    state.last_time = state.clock.elapsed;
+    f64 running_time = 0;
+    u8 frame_count = 0;
+    f64 target_frame_seconds = 1.0f / 60;
+
     PINFO(memory_usage_str());
 
     while (state.is_running) {
@@ -94,21 +103,48 @@ b8 app_run() {
         }
 
         if (!state.is_suspended) {
-            if (!state.game_inst->update(state.game_inst, (f32)0)) {
+            // Update clock and get delta
+            clock_update(&state.clock);
+            f64 current_time = state.clock.elapsed;
+            f64 delta = (current_time - state.last_time);
+            f64 frame_start_time = plat_get_absolute_time();
+
+            if (!state.game_inst->update(state.game_inst, (f32)delta)) {
                 PFATAL("Game update failed! Shutting down.");
                 break;
             }
 
-            if (!state.game_inst->render(state.game_inst, (f32)0)) {
+            if (!state.game_inst->render(state.game_inst, (f32)delta)) {
                 PFATAL("Game render failed! Shutting down.");
                 break;
+            }
+
+            // Determine how long frame took and if below
+            f64 frame_end_time = plat_get_absolute_time();
+            f64 frame_elapsed_time = frame_end_time - frame_start_time;
+            running_time += frame_elapsed_time;
+            f64 remaining_seconds = target_frame_seconds - frame_elapsed_time;
+
+            if (remaining_seconds > 0) {
+                u64 remaining_ms = (remaining_seconds * 1000);
+
+                // If there is time left, give it back to the OS.
+                b8 limit_frames = FALSE;
+                if (remaining_ms > 0 && limit_frames) {
+                    plat_sleep(remaining_ms - 1);
+                }
+
+                frame_count++;
             }
 
             // NOTE: Input update/state copying should always be handled
             // after any input should be recorded; I.E. before this line.
             // As a safety, input is the last thing to be updated before
             // this frame ends.
-            input_update(0);
+            input_update(delta);
+
+            // Update last time
+            state.last_time = current_time;
         }
     }
     state.is_running = FALSE;
