@@ -15,6 +15,7 @@ A game engine built in C
 Vulkan:
 
 - https://vulkan.lunarg.com/doc/sdk/1.3.268.0/linux/getting_started.html
+- https://registry.khronos.org/vulkan/specs/1.2-extensions/html/vkspec.html
 
 Wandos:
 

@@ -8,6 +8,8 @@
 #include "core/pmemory.h"
 #include "platform/platform.h"
 
+#include "renderer/renderer_frontend.h"
+
 typedef struct app_state {
     game *game_inst;
     b8 is_running;
@@ -72,6 +74,12 @@ b8 app_init(game *game_inst) {
         return FALSE;
     }
 
+    // Renderer startup
+    if (!renderer_initialize(game_inst->app_config.name, state.platform)) {
+        PFATAL("Failed to initialize renderer! Aborting application.");
+        return FALSE;
+    }
+
     // NOTE: Initialize the game
     if (!state.game_inst->initialize(state.game_inst)) {
         PFATAL("Initialization failed!");
@@ -113,11 +121,18 @@ b8 app_run() {
                 PFATAL("Game update failed! Shutting down.");
                 break;
             }
-
+            
+            // Game's render routine
             if (!state.game_inst->render(state.game_inst, (f32)delta)) {
                 PFATAL("Game render failed! Shutting down.");
                 break;
             }
+
+            // TODO: Rewrite
+            render_packet packet;
+            packet.delta_time = delta;
+
+            renderer_draw_frame(&packet);
 
             // Determine how long frame took and if below
             f64 frame_end_time = plat_get_absolute_time();
@@ -155,6 +170,8 @@ b8 app_run() {
 
     event_kill();
     input_kill();
+
+    renderer_shutdown();
 
     plat_kill(state.platform);
 
