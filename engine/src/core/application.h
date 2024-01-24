@@ -18,15 +18,13 @@ typedef struct app_config {
 } app_config;
 
 /**
- * @brief Initialize the app
- *
+ * Initialize the app
  * @return TRUE if successful
  */
 PAPI b8 app_init(struct game* game_inst);
 
 /**
- * @brief Run app and handle shutdown
- *
+ * Run app and handle shutdown
  * @return TRUE on successful shutdown
  */
 PAPI b8 app_run();

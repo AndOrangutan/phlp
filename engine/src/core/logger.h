@@ -25,17 +25,17 @@ typedef enum log_level {
 } log_level;
 
 /**
- * @brief Startup Logger
+ * Startup Logger
  */
 b8 logger_init();
 
 /**
- * @brief Shutdown and save logger queue
+ * Shutdown and save logger queue
  */
 void logger_kill();
 
 /**
- * @brief Add message to logger
+ * Add message to logger
  * @param level Log level
  * @param msg Formatted string
  */

@@ -29,14 +29,15 @@ typedef struct event_context {
 
 /**
  * @typedef PFN_on_event
- * @brief Event interface used by listeners that returns TRUE if handled
+ * Event interface used by listeners that returns TRUE if handled
  */
 typedef b8 (*PFN_on_event)(u16 code, void *sender, void *lister_inst,
                            event_context data);
 
 /**
  * @typedef system_event_code
- * @brief System internal event codes. Codes 1-154. Application should use codes > 255.
+ * @brief System internal event codes. Codes 1-154. Application should use codes
+ * > 255.
  *
  */
 typedef enum system_event_code {

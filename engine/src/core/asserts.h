@@ -13,8 +13,7 @@
     #endif
     
     /**
-     * @brief A wrapper around logger for assertions
-     *
+     * A wrapper around logger for assertions
      * @param expression Assertion expression
      * @param msg Assertion message
      * @param file Assertion file locaiton
