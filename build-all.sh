@@ -3,20 +3,16 @@ set echo on
 
 echo "Building everything..."
 
-pushd engine
-source build.sh
+source build-engine.sh
 ERRORLEVEL=$?
-popd
 
 if [ $ERRORLEVEL -ne 0 ]
 then
   echo "Error building engine:"$ERRORLEVEL && exit
 fi
 
-pushd testbed
-source build.sh
+source build-testbed.sh
 ERRORLEVEL=$?
-popd
 
 if [ $ERRORLEVEL -ne 0 ]
 then

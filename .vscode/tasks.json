@@ -4,13 +4,13 @@
             "type": "shell",
             "label": "Build Engine",
             "windows": {
-                "command": "${workspaceFolder}/engine/build.bat"
+                "command": "${workspaceFolder}/build-engine.bat"
             },
             "linux": {
-                "command": "${workspaceFolder}/engine/build.sh"
+                "command": "${workspaceFolder}/build-engine.sh"
             },
             "options": {
-                "cwd": "${workspaceFolder}/engine"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
@@ -22,13 +22,13 @@
             "type": "shell",
             "label": "Build Testbed",
             "windows": {
-                "command": "${workspaceFolder}/testbed/build.bat"
+                "command": "${workspaceFolder}/build-testbed.bat"
             },
             "linux": {
-                "command": "${workspaceFolder}/testbed/build.sh"
+                "command": "${workspaceFolder}/build-testbed.sh"
             },
             "options": {
-                "cwd": "${workspaceFolder}/testbed"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
