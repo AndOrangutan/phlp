@@ -1,8 +1,11 @@
 #include "platform.h"
+#include "renderer/vulkan/vulkan_platform.h"
 
 #if PPLATFORM_WINDOWS
 #include "core/input.h"
 #include "core/logger.h"
+
+#include "containers/darray.h"
 
 #include <stdlib.h>
 #include <windows.h>
@@ -189,6 +192,10 @@ f64 plat_get_time() {
 }
 
 void plat_sleep(u64 ms) { Sleep(ms); }
+
+void plat_get_required_extension_names(const char ***names_darray) {
+    darray_push(*names_darray, &"VK_KHR_win32_surface");
+}
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param,
                                        LPARAM l_param) {

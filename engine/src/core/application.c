@@ -121,7 +121,7 @@ b8 app_run() {
                 PFATAL("Game update failed! Shutting down.");
                 break;
             }
-            
+
             // Game's render routine
             if (!state.game_inst->render(state.game_inst, (f32)delta)) {
                 PFATAL("Game render failed! Shutting down.");

@@ -8,8 +8,8 @@
 #define LOG_TRACE_ENABLED 1
 
 #if PRELEASE == 1
-    #define LOG_DEBUG_ENABLED 0
-    #define LOG_TRACE_ENABLED 0
+#define LOG_DEBUG_ENABLED 0
+#define LOG_TRACE_ENABLED 0
 #endif
 
 // @brief Number of log levels
@@ -39,34 +39,34 @@ void logger_kill();
  * @param level Log level
  * @param msg Formatted string
  */
-PAPI void log_output(log_level level, const char* msg, ...);
+PAPI void log_output(log_level level, const char *msg, ...);
 
 #define PFATAL(msg, ...) log_output(LOG_LEVEL_FATAL, msg, ##__VA_ARGS__);
 
 #ifndef PERROR
-    #define PERROR(msg, ...) log_output(LOG_LEVEL_ERROR, msg, ##__VA_ARGS__);
+#define PERROR(msg, ...) log_output(LOG_LEVEL_ERROR, msg, ##__VA_ARGS__);
 #endif
 
 #if LOG_WARN_ENABLED == 1
-    #define PWARN(msg, ...) log_output(LOG_LEVEL_WARN, msg, ##__VA_ARGS__);
+#define PWARN(msg, ...) log_output(LOG_LEVEL_WARN, msg, ##__VA_ARGS__);
 #else
-    #define PWARN(msg, ...)
+#define PWARN(msg, ...)
 #endif
 
 #if LOG_INFO_ENABLED == 1
-    #define PINFO(msg, ...) log_output(LOG_LEVEL_INFO, msg, ##__VA_ARGS__);
+#define PINFO(msg, ...) log_output(LOG_LEVEL_INFO, msg, ##__VA_ARGS__);
 #else
-    #define PINFO(msg, ...)
+#define PINFO(msg, ...)
 #endif
 
 #if LOG_DEBUG_ENABLED == 1
-    #define PDEBUG(msg, ...) log_output(LOG_LEVEL_DEBUG, msg, ##__VA_ARGS__);
+#define PDEBUG(msg, ...) log_output(LOG_LEVEL_DEBUG, msg, ##__VA_ARGS__);
 #else
-    #define PDEBUG(msg, ...)
+#define PDEBUG(msg, ...)
 #endif
 
 #if LOG_TRACE_ENABLED == 1
-    #define PTRACE(msg, ...) log_output(LOG_LEVEL_TRACE, msg, ##__VA_ARGS__);
+#define PTRACE(msg, ...) log_output(LOG_LEVEL_TRACE, msg, ##__VA_ARGS__);
 #else
-    #define PTRACE(msg, ...)
+#define PTRACE(msg, ...)
 #endif

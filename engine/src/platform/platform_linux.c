@@ -1,9 +1,12 @@
 #include "platform.h"
+#include "renderer/vulkan/vulkan_platform.h"
 
 #if PPLATFORM_LINUX
 #include "core/event.h"
 #include "core/input.h"
 #include "core/logger.h"
+
+#include "containers/darray.h"
 
 #include <X11/XKBlib.h>
 #include <X11/Xlib-xcb.h>
@@ -256,6 +259,10 @@ void plat_sleep(u64 ms) {
     }
     usleep((ms % 1000) * 1000);
 #endif
+}
+
+void plat_get_required_extension_names(const char ***names_darray) {
+    darray_push(*names_darray, &"VK_KHR_xcb_surface"); // VK_KHR_xlib_surface?
 }
 
 keys translate_keycode(u32 x_keycode) {

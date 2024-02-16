@@ -5,7 +5,7 @@
 #include "core/pmemory.h"
 #include "game_types.h"
 
-extern b8 game_init(game* out_game);
+extern b8 game_init(game *out_game);
 
 int main(int argc, char *argv[]) {
     /* ("Phlp Engine Testbed", 100, 100, 1280, 720) */
@@ -19,9 +19,10 @@ int main(int argc, char *argv[]) {
         PFATAL("Could not create game!");
         return -1;
     }
-    
+
     // Ensure function pointers existance
-    if (!game_inst.render || !game_inst.update || !game_inst.initialize || !game_inst.on_resize) {
+    if (!game_inst.render || !game_inst.update || !game_inst.initialize ||
+        !game_inst.on_resize) {
         PFATAL("All game function pointers must be assingmed!");
         return -2;
     }
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Application configuration
-    if(!app_run()) {
+    if (!app_run()) {
         PINFO("Application did not shutdown gracefully");
         return 2;
     }

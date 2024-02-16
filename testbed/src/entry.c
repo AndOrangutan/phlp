@@ -4,7 +4,7 @@
 
 #include <core/pmemory.h>
 
-b8 game_init(game* out_game) {
+b8 game_init(game *out_game) {
 
     // App Configuration
     out_game->app_config.name = "Phlp Engine Testbed";

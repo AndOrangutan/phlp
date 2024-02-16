@@ -22,6 +22,7 @@
 PAPI void report_assertion_failure(const char *expression, const char *msg,
                                    const char *file, i32 line);
 
+// Assert
 #define PASSERT(expr)                                                          \
     {                                                                          \
         if (expr) {                                                            \
@@ -30,11 +31,13 @@ PAPI void report_assertion_failure(const char *expression, const char *msg,
             debugBreak();                                                      \
         }                                                                      \
     }
+
+// Assert with message
 #define PASSERT_MSG(expr, msg)                                                 \
     {                                                                          \
         if (expr) {                                                            \
         } else {                                                               \
-            report_assertion_failure(#expr, msg __FILE__, __LINE__);           \
+            report_assertion_failure(#expr, msg, __FILE__, __LINE__);          \
             debugBreak();                                                      \
         }                                                                      \
     }

@@ -7,7 +7,6 @@ typedef struct game_struct {
     f32 delta_time;
 } game_state;
 
-
 b8 game_initialize(game *game_inst);
 b8 game_update(game *game_inst, f32 delta_time);
 b8 game_render(game *game_inst, f32 delta_time);
