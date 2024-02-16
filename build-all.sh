@@ -1,5 +1,5 @@
 #!/bin/bash
-set echo on
+set -e
 
 echo "Building everything..."
 
