@@ -39,8 +39,6 @@ int main(int argc, char *argv[]) {
         return 2;
     }
 
-    app_run();
-
     memory_kill();
 
     return 0;
