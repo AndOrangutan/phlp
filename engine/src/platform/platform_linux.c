@@ -15,6 +15,11 @@
 #include <sys/time.h>
 #include <xcb/xcb.h> // libx11 libxkbcommon
 
+// Surface stuffs
+#define VK_USE_PLATFORM_XCB_KHR
+#include "renderer/vulkan/vulkan_types.inl"
+#include <vulkan/vulkan.h>
+
 #if _POSIX_C_SOURCE >= 199309L
 #include <time.h> // nanosleep
 #else
@@ -32,6 +37,7 @@ typedef struct plat_state {
     xcb_screen_t *screen;
     xcb_atom_t wm_protocols;
     xcb_atom_t wm_delete_win;
+    VkSurfaceKHR surface;
 } plat_state;
 
 // Key translation
@@ -263,6 +269,23 @@ void plat_sleep(u64 ms) {
 
 void plat_get_required_extension_names(const char ***names_darray) {
     darray_push(*names_darray, &"VK_KHR_xcb_surface"); // VK_KHR_xlib_surface?
+}
+
+b8 plat_create_vulkan_surface(plat_state *state, vulkan_context *context) {
+    VkXcbSurfaceCreateInfoKHR create_info = {
+        VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR};
+    create_info.connection = state->connection;
+    create_info.window = state->window;
+
+    VkResult result = vkCreateXcbSurfaceKHR(
+        context->instance, &create_info, context->allocator, &state->surface);
+    if (result != VK_SUCCESS) {
+        PFATAL("Vulkan surface creation failed.");
+        return FALSE;
+    }
+
+    context->surface = state->surface;
+    return TRUE;
 }
 
 keys translate_keycode(u32 x_keycode) {

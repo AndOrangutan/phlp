@@ -1,6 +1,7 @@
 #include "vulkan_backend.h"
 
 #include "vulkan/vulkan_core.h"
+#include "vulkan_device.h"
 #include "vulkan_platform.h"
 #include "vulkan_types.inl"
 
@@ -132,7 +133,21 @@ b8 vulkan_renderer_backend_initialize(renderer_backend *backend,
     PDEBUG("Vulkan debugger created.")
 #endif
 
-    PINFO("Vulkan renderer intialized successfully.");
+    // Surface
+    PDEBUG("Creating Vulkan surface...");
+    if (!plat_create_vulkan_surface(plat_state, &context)) {
+        PERROR("Failed to create platform surface!");
+        return FALSE;
+    }
+    PDEBUG("Vulkan surface created.")
+
+    // Device creation
+    if (!vulkan_device_create(&context)) {
+        PERROR("Failed to create device!");
+        return FALSE;
+    }
+
+    PINFO("Vulkan renderer initialized successfully.");
     return TRUE;
 }
 
