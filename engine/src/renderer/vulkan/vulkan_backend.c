@@ -6,6 +6,7 @@
 #include "vulkan_types.inl"
 
 #include "core/logger.h"
+#include "core/pmemory.h"
 #include "core/pstring.h"
 
 #include "containers/darray.h"
@@ -158,9 +159,12 @@ void vulkan_renderer_backed_shutdown(renderer_backend *backend) {
         PFN_vkDestroyDebugUtilsMessengerEXT func =
             (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
                 context.instance, "vkDestroyDebugUtilsMessengerEXT");
+
         func(context.instance, context.debug_messenger, context.allocator);
     }
 #endif
+    PDEBUG("Destroying Vulkan surface...");
+    vkDestroySurfaceKHR(context.instance, context.surface, context.allocator);
 
     PDEBUG("Destroying Vulkan instance...");
     vkDestroyInstance(context.instance, context.allocator);
