@@ -31,7 +31,9 @@ typedef struct event_context {
  * @typedef PFN_on_event
  * Event interface used by listeners that returns TRUE if handled
  */
-typedef b8 (*PFN_on_event)(u16 code, void *sender, void *lister_inst,
+typedef b8 (*PFN_on_event)(u16 code,
+                           void *sender,
+                           void *lister_inst,
                            event_context data);
 
 /**

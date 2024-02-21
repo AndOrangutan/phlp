@@ -3,7 +3,8 @@
 #include "defines.h"
 
 typedef enum memory_tag {
-    // For temporary use. Should be assigned one of the below or have a new tag created.
+    // For temporary use. Should be assigned one of the below or have a new tag
+    // created.
     MEMORY_TAG_UNKNOWN,
     MEMORY_TAG_ARRAY,
     MEMORY_TAG_DARRAY,
@@ -28,14 +29,14 @@ typedef enum memory_tag {
 PAPI void memory_init();
 PAPI void memory_kill();
 
-PAPI void* palloc(u64 size, memory_tag tag);
+PAPI void *palloc(u64 size, memory_tag tag);
 
-PAPI void pfree(void* block, u64 size, memory_tag tag);
+PAPI void pfree(void *block, u64 size, memory_tag tag);
 
-PAPI void* pmemzero(void* block, u64 size);
+PAPI void *pmemzero(void *block, u64 size);
 
-PAPI void* pmemcpy(void* dest, const void* source, u64 size);
+PAPI void *pmemcpy(void *dest, const void *source, u64 size);
 
-PAPI void* pmemset(void* dest, i32 value, u64 size);
+PAPI void *pmemset(void *dest, i32 value, u64 size);
 
-PAPI char* memory_usage_str(void);
+PAPI char *memory_usage_str(void);

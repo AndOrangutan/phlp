@@ -1,3 +1,7 @@
 IndentWidth: 4
 BasedOnStyle: LLVM
 UseTab: Never
+AlignAfterOpenBracket: Align
+BinPackParameters: false
+ColumnLimit: 80
+AllowShortFunctionsOnASingleLine: false

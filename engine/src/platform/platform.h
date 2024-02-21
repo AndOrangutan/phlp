@@ -15,8 +15,8 @@ typedef struct plat_state plat_state;
  * @param x Location of the window
  * @param y Location of the window
  */
-plat_state *plat_init(const char *application_name, i32 x, i32 y, i32 width,
-                      i32 height);
+plat_state *
+plat_init(const char *application_name, i32 x, i32 y, i32 width, i32 height);
 
 /**
  * Platfrom shutdown

@@ -10,7 +10,7 @@ struct game;
  *
  */
 typedef struct app_config {
-    char* name;
+    char *name;
     i16 start_pos_x;
     i16 start_pos_y;
     i16 start_width;
@@ -21,7 +21,7 @@ typedef struct app_config {
  * Initialize the app
  * @return TRUE if successful
  */
-PAPI b8 app_init(struct game* game_inst);
+PAPI b8 app_init(struct game *game_inst);
 
 /**
  * Run app and handle shutdown

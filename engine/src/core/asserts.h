@@ -19,8 +19,10 @@
  * @param file Assertion file locaiton
  * @param line Assertion line number
  */
-PAPI void report_assertion_failure(const char *expression, const char *msg,
-                                   const char *file, i32 line);
+PAPI void report_assertion_failure(const char *expression,
+                                   const char *msg,
+                                   const char *file,
+                                   i32 line);
 
 // Assert
 #define PASSERT(expr)                                                          \
