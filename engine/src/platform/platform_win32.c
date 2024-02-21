@@ -2,6 +2,7 @@
 #include "renderer/vulkan/vulkan_platform.h"
 
 #if PPLATFORM_WINDOWS
+#include "core/event.h"
 #include "core/input.h"
 #include "core/logger.h"
 
@@ -25,11 +26,13 @@ typedef struct plat_state {
 static f64 clock_frequency;
 static LARGE_INTEGER start_time;
 
-LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param,
+LRESULT CALLBACK win32_process_message(HWND hwnd,
+                                       u32 msg,
+                                       WPARAM w_param,
                                        LPARAM l_param);
 
-plat_state *plat_init(const char *application_name, i32 x, i32 y, i32 width,
-                      i32 height) {
+plat_state *
+plat_init(const char *application_name, i32 x, i32 y, i32 width, i32 height) {
     plat_state *state = malloc(sizeof(plat_state));
 
     state->h_instance = GetModuleHandleA(0);
@@ -197,7 +200,9 @@ f64 plat_get_time() {
     return (f64)now_time.QuadPart * clock_frequency;
 }
 
-void plat_sleep(u64 ms) { Sleep(ms); }
+void plat_sleep(u64 ms) {
+    Sleep(ms);
+}
 
 void plat_get_required_extension_names(const char ***names_darray) {
     darray_push(*names_darray, &"VK_KHR_win32_surface");
@@ -221,7 +226,9 @@ b8 plat_create_vulkan_surface(platform_state *state, vulkan_context *context) {
     return TRUE;
 }
 
-LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param,
+LRESULT CALLBACK win32_process_message(HWND hwnd,
+                                       u32 msg,
+                                       WPARAM w_param,
                                        LPARAM l_param) {
     switch (msg) {
     case WM_ERASEBKGND:
@@ -230,7 +237,9 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param,
         return 1;
     case WM_CLOSE:
         // TODO: Fire an event for the application to quit.
-        return 0;
+        event_context data = {};
+        event_fire(EVENT_CODE_APPLICATION_QUIT, 0, data);
+        return TRUE;
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;

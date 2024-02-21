@@ -5,16 +5,22 @@
 #include "vulkan_device.h"
 #include "vulkan_image.h"
 
-void create(vulkan_context *context, u32 width, u32 height,
+void create(vulkan_context *context,
+            u32 width,
+            u32 height,
             vulkan_swapchain *swapchain);
 void destroy(vulkan_context *context, vulkan_swapchain *swapchain);
 
-void vulkan_swapchain_create(vulkan_context *context, u32 width, u32 height,
+void vulkan_swapchain_create(vulkan_context *context,
+                             u32 width,
+                             u32 height,
                              vulkan_swapchain *out_swapchain) {
     create(context, width, height, out_swapchain);
 }
 
-void vulkan_swapchain_recreate(vulkan_context *context, u32 width, u32 height,
+void vulkan_swapchain_recreate(vulkan_context *context,
+                               u32 width,
+                               u32 height,
                                vulkan_swapchain *swapchain) {
     destroy(context, swapchain);
     create(context, width, height, swapchain);
@@ -26,8 +32,11 @@ void vulkan_swapchain_destroy(vulkan_context *context,
 }
 
 b8 vulkan_swapchain_acquire_next_image_index(
-    vulkan_context *context, vulkan_swapchain *swapchain, u64 timeout_ns,
-    VkSemaphore image_available_semaphore, VkFence fence,
+    vulkan_context *context,
+    vulkan_swapchain *swapchain,
+    u64 timeout_ns,
+    VkSemaphore image_available_semaphore,
+    VkFence fence,
     u32 *out_image_index) {
 
     VkResult result = vkAcquireNextImageKHR(
@@ -48,7 +57,8 @@ b8 vulkan_swapchain_acquire_next_image_index(
 
 void vulkan_swapchain_present(vulkan_context *context,
                               vulkan_swapchain *swapchain,
-                              VkQueue graphics_queue, VkQueue present_queue,
+                              VkQueue graphics_queue,
+                              VkQueue present_queue,
                               VkSemaphore render_complete_semaphore,
                               u32 present_image_index) {
     // Return the image to the swapchain for presentation
@@ -70,7 +80,9 @@ void vulkan_swapchain_present(vulkan_context *context,
     }
 }
 
-void create(vulkan_context *context, u32 width, u32 height,
+void create(vulkan_context *context,
+            u32 width,
+            u32 height,
             vulkan_swapchain *swapchain) {
     VkExtent2D swapchain_extent = {width, height};
     swapchain->max_frames_in_flight = 2; // Use tripple buffering if possible
