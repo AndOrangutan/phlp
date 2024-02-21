@@ -3,5 +3,5 @@ BasedOnStyle: LLVM
 UseTab: Never
 AlignAfterOpenBracket: Align
 BinPackParameters: false
-ColumnLimit: 80
+# ColumnLimit: 80
 AllowShortFunctionsOnASingleLine: false

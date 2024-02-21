@@ -3,11 +3,12 @@
 #include "vulkan/vulkan_core.h"
 #include "vulkan_device.h"
 #include "vulkan_platform.h"
+#include "vulkan_renderpass.h"
 #include "vulkan_swapchain.h"
 #include "vulkan_types.inl"
 
 #include "core/logger.h"
-#include "core/pmemory.h"
+/* #include "core/pmemory.h" */
 #include "core/pstring.h"
 
 #include "containers/darray.h"
@@ -16,10 +17,11 @@
 
 static vulkan_context context;
 
-VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT message_type,
-    const VkDebugUtilsMessengerCallbackDataEXT *callback_data, void *user_data);
+VKAPI_ATTR VkBool32 VKAPI_CALL
+vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+                  VkDebugUtilsMessageTypeFlagsEXT message_type,
+                  const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
+                  void *user_data);
 
 i32 find_memory_index(u32 type_filter, u32 property_flags);
 
@@ -158,12 +160,20 @@ b8 vulkan_renderer_backend_initialize(renderer_backend *backend,
     vulkan_swapchain_create(&context, context.framebuffer_width,
                             context.framebuffer_height, &context.swapchain);
 
+    // Renderpass
+    vulkan_renderpass_create(
+        &context, &context.main_renderpass, 0, 0, context.framebuffer_width,
+        context.framebuffer_height, 0.0f, 0.0f, 0.2f, 1.0f, 1.0f, 0);
+
     PINFO("Vulkan renderer initialized successfully.");
     return TRUE;
 }
 
 void vulkan_renderer_backed_shutdown(renderer_backend *backend) {
     // Destroy in opposite order of creation
+
+    PDEBUG("Destroying Vulkan renderpass...");
+    vulkan_renderpass_destroy(&context, &context.main_renderpass);
 
     PDEBUG("Destroying Vulkan swapchain...");
     vulkan_swapchain_destroy(&context, &context.swapchain);
@@ -193,8 +203,10 @@ void vulkan_renderer_backed_shutdown(renderer_backend *backend) {
     vkDestroyInstance(context.instance, context.allocator);
 }
 
-void vulkan_renderer_backend_on_resized(renderer_backend *backend, u16 width,
-                                        u16 height) {}
+void vulkan_renderer_backend_on_resized(renderer_backend *backend,
+                                        u16 width,
+                                        u16 height) {
+}
 
 b8 vulkan_renderer_backend_begin_frame(renderer_backend *backend,
                                        f32 delta_time) {
