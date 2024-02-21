@@ -26,7 +26,8 @@ typedef struct vulkan_physical_device_queue_family_info {
 
 b8 select_physical_device(vulkan_context *context);
 b8 physical_device_meets_requirements(
-    VkPhysicalDevice device, VkSurfaceKHR surface,
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface,
     const VkPhysicalDeviceProperties *properties,
     const VkPhysicalDeviceFeatures *features,
     const vulkan_physical_device_requirements *requirements,
@@ -118,6 +119,18 @@ b8 vulkan_device_create(vulkan_context *context) {
                      context->device.transfer_queue_index, 0,
                      &context->device.transfer_queue);
     PINFO("Queues obtained.");
+
+    // Create command pool for graphics queue
+    VkCommandPoolCreateInfo pool_create_info = {
+        VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+    pool_create_info.queueFamilyIndex = context->device.graphics_queue_index;
+    pool_create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+    VK_CHECK(vkCreateCommandPool(context->device.logical_device,
+                                 &pool_create_info, context->allocator,
+                                 &context->device.graphics_command_pool));
+    PINFO("Graphics command pool created.");
+
     return TRUE;
 }
 
@@ -126,6 +139,11 @@ void vulkan_device_destroy(vulkan_context *context) {
     context->device.graphics_queue = 0;
     context->device.present_queue = 0;
     context->device.transfer_queue = 0;
+
+    PINFO("Destorying command pools...");
+    vkDestroyCommandPool(context->device.logical_device,
+                         context->device.graphics_command_pool,
+                         context->allocator);
 
     // Destroy logical device
     PINFO("Destroying logical device...");
@@ -166,7 +184,8 @@ void vulkan_device_destroy(vulkan_context *context) {
 }
 
 void vulkan_device_query_swapchain_support(
-    VkPhysicalDevice physical_device, VkSurfaceKHR surface,
+    VkPhysicalDevice physical_device,
+    VkSurfaceKHR surface,
     vulkan_swapchain_support_info *out_support_info) {
 
     // Surface capabilities
@@ -344,7 +363,8 @@ b8 select_physical_device(vulkan_context *context) {
 }
 
 b8 physical_device_meets_requirements(
-    VkPhysicalDevice device, VkSurfaceKHR surface,
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface,
     const VkPhysicalDeviceProperties *properties,
     const VkPhysicalDeviceFeatures *features,
     const vulkan_physical_device_requirements *requirements,
