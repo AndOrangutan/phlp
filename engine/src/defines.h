@@ -22,9 +22,9 @@ typedef char b8;
 
 // Properly define static assertions.
 #if defined(__clang__) || defined(__gcc__)
-    #define STATIC_ASSERT _Static_assert
+#define STATIC_ASSERT _Static_assert
 #else
-    #define STATIC_ASSERT static_assert
+#define STATIC_ASSERT static_assert
 #endif
 
 // Ensure all types are of the correct size.
@@ -43,59 +43,62 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 #define TRUE 1
 #define FALSE 0
-#define NULL ((void*)0)
+#define NULL ((void *)0)
 
 // Platform detection
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) 
-    #define PPLATFORM_WINDOWS 1
-    #ifndef _WIN64
-        #error "64-bit is required on Windows!"
-    #endif
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#define PPLATFORM_WINDOWS 1
+#ifndef _WIN64
+#error "64-bit is required on Windows!"
+#endif
 #elif defined(__linux__) || defined(__gnu_linux__)
-    // Linux OS
-    #define PPLATFORM_LINUX 1
-    #if defined(__ANDROID__)
-        #define PPLATFORM_ANDROID 1
-    #endif
+// Linux OS
+#define PPLATFORM_LINUX 1
+#if defined(__ANDROID__)
+#define PPLATFORM_ANDROID 1
+#endif
 
 #elif defined(__unix__)
-    // Catch anything not caught by the above.
-    #define PPLATFORM_UNIX 1
+// Catch anything not caught by the above.
+#define PPLATFORM_UNIX 1
 #elif defined(_POSIX_VERSION)
-    // Posix
-    #define PPLATFORM_POSIX 1
+// Posix
+#define PPLATFORM_POSIX 1
 #elif __APPLE__
-    // Apple platforms
-    #define PPLATFORM_APPLE 1
-    #include <TargetConditionals.h>
-    #if TARGET_IPHONE_SIMULATOR
-        // iOS Simulator
-        #define PPLATFORM_IOS 1
-        #define PPLATFORM_IOS_SIMULATOR 1
-    #elif TARGET_OS_IPHONE
-        #define PPLATFORM_IOS 1
-        // iOS device
-    #elif TARGET_OS_MAC
-        // Other kinds of Mac OS
-    #else
-        #error "Unknown Apple platform"
-    #endif
+// Apple platforms
+#define PPLATFORM_APPLE 1
+#include <TargetConditionals.h>
+#if TARGET_IPHONE_SIMULATOR
+// iOS Simulator
+#define PPLATFORM_IOS 1
+#define PPLATFORM_IOS_SIMULATOR 1
+#elif TARGET_OS_IPHONE
+#define PPLATFORM_IOS 1
+// iOS device
+#elif TARGET_OS_MAC
+// Other kinds of Mac OS
 #else
-    #error "Unknown platform!"
+#error "Unknown Apple platform"
+#endif
+#else
+#error "Unknown platform!"
 #endif
 
 #ifdef PEXPORT
-    // Exports
-    #ifdef _MSC_VER
-        #define PAPI __declspec(dllexport)
-    #else
-        #define PAPI __attribute__((visibility("default")))
-    #endif
+// Exports
+#ifdef _MSC_VER
+#define PAPI __declspec(dllexport)
 #else
-    // Imports
-    #ifdef _MSC_VER
-        #define PAPI __declspec(dllimport)
-    #else
-        #define PAPI
-    #endif
+#define PAPI __attribute__((visibility("default")))
 #endif
+#else
+// Imports
+#ifdef _MSC_VER
+#define PAPI __declspec(dllimport)
+#else
+#define PAPI
+#endif
+#endif
+
+#define PCLAMP(value, min, max)                                                \
+    (value <= min) ? min : (value >= max) ? max : value;
